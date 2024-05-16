@@ -35,9 +35,11 @@ public class MinecraftTest {
         renderer.setBlendMode(BlendMode.SRC_OVER);
 
         McModel model = McModelHelper.load(MinecraftTest.class.getResourceAsStream("/model.json"));
+        // McModel model = McModelHelper.load(MinecraftTest.class.getResourceAsStream("/white_concrete.json"));
 
         Map<String, Texture2D> textures = new HashMap<>();
         textures.put("texture", new RgbaTexture2D(ImageIO.read(MinecraftTest.class.getResourceAsStream("/texture.png"))));
+        // textures.put("block/white_concrete", new RgbaTexture2D(ImageIO.read(MinecraftTest.class.getResourceAsStream("/white_concrete.png"))));
 
         shader.modelViewProjectionMatrix.ortho(0f, 16f, 0f, 16f, -1000f, 1000f)
                 .mul(new Matrix4f()

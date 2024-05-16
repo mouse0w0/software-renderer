@@ -8,9 +8,6 @@ import org.joml.Vector4f;
 import org.joml.Vector4fc;
 
 public class MinecraftShader implements Shader<MinecraftVertex> {
-    public static final float DIFFUSE_LIGHT = 0.6f;
-    public static final float AMBIENT_LIGHT = 0.4f;
-
     public final Matrix4f modelViewProjectionMatrix = new Matrix4f();
 
     public final DefaultSampler2D sampler = new DefaultSampler2D();
@@ -18,28 +15,29 @@ public class MinecraftShader implements Shader<MinecraftVertex> {
     public final Vector3f light0Dir = new Vector3f();
     public final Vector3f light1Dir = new Vector3f();
 
+    public boolean enableLight = true;
+
+    public float diffuseLight = 0.6f;
+    public float ambientLight = 0.4f;
+
     public void setupGui3DLighting() {
-        // THIS IS A TEMPORARY SOLUTION, ONLY APPLIES TO SOME CASES. NEED FIX IT.
-        light0Dir.set(0.41900876f,0.105269626f, 0.9018591f);
-        light1Dir.set(-0.15313458f, 0.94161505f, 0.29985133f);
+        // light0Dir.set(0.4166f, 0.1043f, 0.8975f).normalize();
+        // light1Dir.set(-0.1527f, 0.9317f, 0.2985f).normalize();
 
-        // light0Dir.set(0.2f, 1.0f, -0.7f).normalize();
-        // light1Dir.set(-0.2f, 1.0f, 0.7f).normalize();
-
-        // light0Dir.set(-0.16169035f, 0.80845207f, 0.5659164f);
-        // light1Dir.set(0.16169035f, 0.80845207f, -0.5659164f);
+        light0Dir.set(0.41871133f, 0.104828596f, 0.9020486f);
+        light1Dir.set(-0.15421219f, 0.94092655f, 0.30145603f);
     }
 
     @Override
     public void vertex(MinecraftVertex vertex) {
         vertex.position.mul(modelViewProjectionMatrix, vertex.position);
-        lighting(vertex);
+        if (enableLight) lighting(vertex);
     }
 
     private void lighting(MinecraftVertex vertex) {
         float light0 = Math.max(0, light0Dir.dot(vertex.normal));
         float light1 = Math.max(0, light1Dir.dot(vertex.normal));
-        float light = Math.min(1, (light0 + light1) * DIFFUSE_LIGHT + AMBIENT_LIGHT);
+        float light = Math.min(1, (light0 + light1) * diffuseLight + ambientLight);
         mulXYZ(vertex.color, light);
     }
 
