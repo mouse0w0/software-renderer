@@ -42,14 +42,12 @@ public class MinecraftTest {
         // textures.put("block/white_concrete", new RgbaTexture2D(ImageIO.read(MinecraftTest.class.getResourceAsStream("/white_concrete.png"))));
 
         shader.modelViewProjectionMatrix.ortho(0f, 16f, 0f, 16f, -1000f, 1000f)
-                .mul(new Matrix4f()
-                        .translate(8f, 8f, 0f)
-                        .scale(16f, 16f, 16f))
-                .mul(new Matrix4f()
-                        .rotateX((float) Math.toRadians(30))
-                        .rotateY((float) Math.toRadians(225))
-                        .scale(0.625f, 0.625f, 0.625f)
-                        .translate(-0.5f, -0.5f, -0.5f));
+                .translate(8f, 8f, 0f)
+                .scale(16f, 16f, 16f)
+                .rotateX((float) Math.toRadians(30))
+                .rotateY((float) Math.toRadians(225))
+                .scale(0.625f, 0.625f, 0.625f)
+                .translate(-0.5f, -0.5f, -0.5f);
 
         new McModelRenderer().render(model, textures::get, renderer, shader);
 
