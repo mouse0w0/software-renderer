@@ -52,7 +52,7 @@ public class McModelHelper {
         @Override
         public Vector3f read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
-                return new Vector3f(0);
+                return null;
             } else {
                 in.beginArray();
                 Vector3f v = new Vector3f((float) in.nextDouble(), (float) in.nextDouble(), (float) in.nextDouble());
@@ -80,7 +80,7 @@ public class McModelHelper {
         @Override
         public Vector4f read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
-                return new Vector4f(0);
+                return null;
             } else {
                 in.beginArray();
                 Vector4f v = new Vector4f(

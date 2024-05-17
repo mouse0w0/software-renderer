@@ -203,22 +203,18 @@ public final class McModelRenderer {
 
     private static Vector4f getTexCoord(McFace face, Vector4f dest) {
         Vector4f faceUv = face.getUv();
-        float u0 = normalizeTexCoord(faceUv.x);
-        float v0 = normalizeTexCoord(faceUv.y);
-        float u1 = normalizeTexCoord(faceUv.z);
-        float v1 = normalizeTexCoord(faceUv.w);
-        return dest.set(shrinkTexCoord(u0, u1), shrinkTexCoord(v0, v1), shrinkTexCoord(u1, u0), shrinkTexCoord(v1, v0));
+        if (faceUv != null) {
+            return dest.set(normalizeTexCoord(faceUv.x), normalizeTexCoord(faceUv.y),
+                    normalizeTexCoord(faceUv.z), normalizeTexCoord(faceUv.w));
+        } else {
+            return dest.set(0, 0, 1, 1);
+        }
     }
 
     private static float normalizeTexCoord(float v) {
         if (v < 0f) return 0f;
         if (v > 16f) return 16f;
         return v / 16f;
-    }
-
-    private static float shrinkTexCoord(float a, float b) {
-        // return a * .999f + b * .001f;
-        return a;
     }
 
     private static void texCoord(Vector4f texCoord, int flag, Vector2f dest) {
