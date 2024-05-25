@@ -8,19 +8,19 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Locale;
 
-@JsonAdapter(McAxis.Persistence.class)
-public enum McAxis {
+@JsonAdapter(Axis.Persister.class)
+public enum Axis {
     X, Y, Z;
 
-    public static class Persistence extends TypeAdapter<McAxis> {
+    public static class Persister extends TypeAdapter<Axis> {
         @Override
-        public void write(JsonWriter out, McAxis value) throws IOException {
+        public void write(JsonWriter out, Axis value) throws IOException {
             out.value(value.name().toLowerCase(Locale.ROOT));
         }
 
         @Override
-        public McAxis read(JsonReader in) throws IOException {
-            return McAxis.valueOf(in.nextString().toUpperCase(Locale.ROOT));
+        public Axis read(JsonReader in) throws IOException {
+            return Axis.valueOf(in.nextString().toUpperCase(Locale.ROOT));
         }
     }
 }

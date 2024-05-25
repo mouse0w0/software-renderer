@@ -13,29 +13,29 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class McModelHelper {
+public class ModelLoader {
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Vector3f.class, new Vector3fPersistence())
-            .registerTypeAdapter(Vector4f.class, new Vector4fPersistence())
+            .registerTypeAdapter(Vector3f.class, new Vector3fPersister())
+            .registerTypeAdapter(Vector4f.class, new Vector4fPersister())
             .create();
 
-    public static McModel load(Path file) throws IOException {
+    public static Model load(Path file) throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(file)) {
             return load(reader);
         }
     }
 
-    public static McModel load(InputStream inputStream) throws IOException {
+    public static Model load(InputStream inputStream) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             return load(reader);
         }
     }
 
-    public static McModel load(Reader reader) {
-        return GSON.fromJson(reader, McModel.class);
+    public static Model load(Reader reader) {
+        return GSON.fromJson(reader, Model.class);
     }
 
-    private static class Vector3fPersistence extends TypeAdapter<Vector3f> {
+    private static class Vector3fPersister extends TypeAdapter<Vector3f> {
         @Override
         public void write(JsonWriter out, Vector3f value) throws IOException {
             if (value == null) {
@@ -62,7 +62,7 @@ public class McModelHelper {
         }
     }
 
-    private static class Vector4fPersistence extends TypeAdapter<Vector4f> {
+    private static class Vector4fPersister extends TypeAdapter<Vector4f> {
         @Override
         public void write(JsonWriter out, Vector4f value) throws IOException {
             if (value == null) {

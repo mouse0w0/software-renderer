@@ -1,10 +1,10 @@
 package com.github.mouse0w0.softwarerenderer.minecraft;
 
 import com.github.mouse0w0.softwarerenderer.Renderer;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McElement;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McFace;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McFacing;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McModel;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelElement;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelFace;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.Direction;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.Model;
 import com.github.mouse0w0.softwarerenderer.texture.Texture2D;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -14,7 +14,7 @@ import org.joml.Vector4f;
 import java.util.Map;
 import java.util.function.Function;
 
-public final class McModelRenderer {
+public final class ModelRenderer {
     private static final Matrix4f IDENTIFY = new Matrix4f();
 
     private static final float SCALE_ROTATION_22_5 = 1.0f / (float) Math.cos(Math.PI / 8d) - 1.0f;
@@ -35,36 +35,41 @@ public final class McModelRenderer {
     private static final int[] TEX_COORDS_180_INDICES = {3, 2, 0, 3, 0, 1};
     private static final int[] TEX_COORDS_270_INDICES = {2, 0, 1, 2, 1, 3};
 
-    public void render(McModel model,
+    public void render(Model model,
                        Function<String, Texture2D> textureGetter,
+                       TintGetter tintGetter,
+                       boolean useBlockLight,
                        Renderer<MinecraftVertex> renderer,
                        MinecraftShader shader) {
         Map<String, String> textures = model.getTextures();
-        for (McElement element : model.getElements()) {
+        for (ModelElement element : model.getElements()) {
             Vector3f[] boxPositions = getBoxPositions(element);
-            Map<McFacing, McFace> faces = element.getFaces();
-            for (McFacing facing : faces.keySet()) {
-                renderFace(facing, faces.get(facing), textures, boxPositions, textureGetter, renderer, shader);
+            Map<Direction, ModelFace> faces = element.getFaces();
+            for (Direction direction : faces.keySet()) {
+                renderFace(direction, faces.get(direction), textures, boxPositions, textureGetter, tintGetter, useBlockLight, renderer, shader);
             }
         }
     }
 
     private final Vector4f tempTexCoord = new Vector4f();
-    // private final Vector4f tempColor = new Vector4f();
+    private final Vector4f tempColor = new Vector4f();
+    private final Vector4f tempTint = new Vector4f();
     private final Vector3f tempAB = new Vector3f();
     private final Vector3f tempAC = new Vector3f();
     private final Vector3f tempNormal = new Vector3f();
 
-    private void renderFace(McFacing facing,
-                            McFace face,
+    private void renderFace(Direction direction,
+                            ModelFace face,
                             Map<String, String> textures,
                             Vector3f[] boxPositions,
                             Function<String, Texture2D> textureGetter,
+                            TintGetter tintGetter,
+                            boolean useBlockLight,
                             Renderer<MinecraftVertex> renderer,
                             MinecraftShader shader) {
         Vector4f texCoord = getTexCoord(face, tempTexCoord);
-        // Vector4f color = getFaceColor(facing, tempColor);
-        int[] posIndices = VERTEX_DATA_INDICES[facing.ordinal()];
+        Vector4f color = getFaceColor(direction, useBlockLight, tempColor).mul(tintGetter.getTint(face.getTintIndex(), tempTint));
+        int[] posIndices = VERTEX_DATA_INDICES[direction.ordinal()];
         int[] texCoordIndices = getTexCoordIndices(face);
 
         shader.sampler.setTexture(textureGetter.apply(getTextureName(face.getTexture(), textures)));
@@ -79,41 +84,41 @@ public final class McModelRenderer {
         MinecraftVertex c = renderer.c();
 
         a.position.set(boxPositions[posIndices[0]], 1f);
-        a.color.set(1f);
+        a.color.set(color);
         texCoord(texCoord, texCoordIndices[0], a.texCoord);
         a.normal.set(tempNormal);
 
         b.position.set(boxPositions[posIndices[1]], 1f);
-        b.color.set(1f);
+        b.color.set(color);
         texCoord(texCoord, texCoordIndices[1], b.texCoord);
         b.normal.set(tempNormal);
 
         c.position.set(boxPositions[posIndices[2]], 1f);
-        c.color.set(1f);
+        c.color.set(color);
         texCoord(texCoord, texCoordIndices[2], c.texCoord);
         c.normal.set(tempNormal);
 
         renderer.drawTriangle();
 
         a.position.set(boxPositions[posIndices[3]], 1f);
-        a.color.set(1f);
+        a.color.set(color);
         texCoord(texCoord, texCoordIndices[3], a.texCoord);
         a.normal.set(tempNormal);
 
         b.position.set(boxPositions[posIndices[4]], 1f);
-        b.color.set(1f);
+        b.color.set(color);
         texCoord(texCoord, texCoordIndices[4], b.texCoord);
         b.normal.set(tempNormal);
 
         c.position.set(boxPositions[posIndices[5]], 1f);
-        c.color.set(1f);
+        c.color.set(color);
         texCoord(texCoord, texCoordIndices[5], c.texCoord);
         c.normal.set(tempNormal);
 
         renderer.drawTriangle();
     }
 
-    private int[] getTexCoordIndices(McFace face) {
+    private int[] getTexCoordIndices(ModelFace face) {
         switch (face.getRotation()) {
             default:
                 return TEX_COORDS_INDICES;
@@ -126,28 +131,32 @@ public final class McModelRenderer {
         }
     }
 
-    // private static Vector4f getFaceColor(McFacing facing, Vector4f dest) {
-    //     switch (facing) {
-    //         case DOWN:
-    //             return dest.set(0.5f, 0.5f, 0.5f, 1f);
-    //         case NORTH:
-    //         case SOUTH:
-    //             return dest.set(0.8f, 0.8f, 0.8f, 1f);
-    //         case WEST:
-    //         case EAST:
-    //             return dest.set(0.6f, 0.6f, 0.6f, 1f);
-    //         case UP:
-    //         default:
-    //             return dest.set(1f, 1f, 1f, 1f);
-    //     }
-    // }
+    private static Vector4f getFaceColor(Direction direction, boolean useBlockLight, Vector4f dest) {
+        if (useBlockLight) {
+            switch (direction) {
+                case DOWN:
+                    return dest.set(0.5f, 0.5f, 0.5f, 1f);
+                case NORTH:
+                case SOUTH:
+                    return dest.set(0.8f, 0.8f, 0.8f, 1f);
+                case WEST:
+                case EAST:
+                    return dest.set(0.6f, 0.6f, 0.6f, 1f);
+                case UP:
+                default:
+                    return dest.set(1f, 1f, 1f, 1f);
+            }
+        } else {
+            return dest.set(1f);
+        }
+    }
 
     private final Vector3f[] boxPositions = new Vector3f[]{
             new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f(),
             new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f()
     };
 
-    private Vector3f[] getBoxPositions(McElement element) {
+    private Vector3f[] getBoxPositions(ModelElement element) {
         Vector3f from = element.getFrom();
         Vector3f to = element.getTo();
         Matrix4f matrix = getRotationMatrix(element.getRotation());
@@ -165,11 +174,15 @@ public final class McModelRenderer {
         return dest.set(x, y, z).div(16);
     }
 
-    private static Matrix4f getRotationMatrix(McElement.Rotation rotation) {
+    private final Matrix4f tempRotationMatrix = new Matrix4f();
+    private final Vector3f tempScale = new Vector3f();
+    private final Vector3f tempOrigin = new Vector3f();
+
+    private Matrix4f getRotationMatrix(ModelElement.Rotation rotation) {
         if (rotation == null) return IDENTIFY;
 
-        Matrix4f matrix = new Matrix4f();
-        Vector3f scale = new Vector3f();
+        Matrix4f matrix = tempRotationMatrix.identity();
+        Vector3f scale = tempScale;
         switch (rotation.getAxis()) {
             case X:
                 matrix.rotateX(rotation.getAngle() * TO_RADIANS);
@@ -197,11 +210,11 @@ public final class McModelRenderer {
             scale.set(1f);
         }
 
-        Vector3f origin = rotation.getOrigin().div(16, new Vector3f());
+        Vector3f origin = rotation.getOrigin().div(16, tempOrigin);
         return matrix.scale(scale).translateLocal(origin).translate(origin.negate());
     }
 
-    private static Vector4f getTexCoord(McFace face, Vector4f dest) {
+    private static Vector4f getTexCoord(ModelFace face, Vector4f dest) {
         Vector4f faceUv = face.getUv();
         if (faceUv != null) {
             return dest.set(normalizeTexCoord(faceUv.x), normalizeTexCoord(faceUv.y),
@@ -228,5 +241,12 @@ public final class McModelRenderer {
             name = textures.get(name.substring(1));
         }
         return name;
+    }
+
+    @FunctionalInterface
+    public interface TintGetter {
+        TintGetter DEFAULT = (tintIndex, dest) -> dest.set(1f);
+
+        Vector4f getTint(int tintIndex, Vector4f dest);
     }
 }

@@ -10,12 +10,12 @@ import org.joml.Vector4f;
 
 import java.lang.reflect.Type;
 
-@JsonAdapter(McFace.Serializer.class)
-public class McFace {
+@JsonAdapter(ModelFace.Serializer.class)
+public class ModelFace {
     private Vector4f uv;
     private String texture;
     @SerializedName("cullface")
-    private String cullFace = null;
+    private Direction cullFace = null;
     private int rotation = 0;
     @SerializedName("tintindex")
     private int tintIndex = -1;
@@ -36,11 +36,11 @@ public class McFace {
         this.texture = texture;
     }
 
-    public String getCullFace() {
+    public Direction getCullFace() {
         return cullFace;
     }
 
-    public void setCullFace(String cullFace) {
+    public void setCullFace(Direction cullFace) {
         this.cullFace = cullFace;
     }
 
@@ -60,17 +60,17 @@ public class McFace {
         this.tintIndex = tintIndex;
     }
 
-    public static class Serializer implements JsonSerializer<McFace> {
+    public static class Serializer implements JsonSerializer<ModelFace> {
 
         @Override
-        public JsonElement serialize(McFace src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject root = new JsonObject();
-            root.addProperty("texture", src.getTexture());
-            root.add("uv", context.serialize(src.getUv()));
-            if (src.getCullFace() != null) root.addProperty("cullface", src.getCullFace());
-            if (src.getRotation() != 0) root.addProperty("rotation", src.getRotation());
-            if (src.getTintIndex() != -1) root.addProperty("tintindex", src.getTintIndex());
-            return root;
+        public JsonElement serialize(ModelFace src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonFace = new JsonObject();
+            jsonFace.addProperty("texture", src.getTexture());
+            jsonFace.add("uv", context.serialize(src.getUv()));
+            if (src.getCullFace() != null) jsonFace.add("cullface", context.serialize(src.getCullFace()));
+            if (src.getRotation() != 0) jsonFace.addProperty("rotation", src.getRotation());
+            if (src.getTintIndex() != -1) jsonFace.addProperty("tintindex", src.getTintIndex());
+            return jsonFace;
         }
     }
 }

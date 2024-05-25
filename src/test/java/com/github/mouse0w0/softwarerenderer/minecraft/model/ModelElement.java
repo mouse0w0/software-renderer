@@ -10,25 +10,25 @@ import org.joml.Vector3f;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-@JsonAdapter(McElement.Serializer.class)
-public class McElement {
+@JsonAdapter(ModelElement.Serializer.class)
+public class ModelElement {
     private Vector3f from;
     private Vector3f to;
     private Rotation rotation;
     private boolean shade = true;
-    private Map<McFacing, McFace> faces;
+    private Map<Direction, ModelFace> faces;
 
     @JsonAdapter(Rotation.Serializer.class)
     public static class Rotation {
         private Vector3f origin;
-        private McAxis axis;
+        private Axis axis;
         private float angle;
         private boolean rescale;
 
         public Rotation() {
         }
 
-        public Rotation(Vector3f origin, McAxis axis, float angle, boolean rescale) {
+        public Rotation(Vector3f origin, Axis axis, float angle, boolean rescale) {
             this.origin = origin;
             this.axis = axis;
             this.angle = angle;
@@ -43,11 +43,11 @@ public class McElement {
             this.origin = origin;
         }
 
-        public McAxis getAxis() {
+        public Axis getAxis() {
             return axis;
         }
 
-        public void setAxis(McAxis axis) {
+        public void setAxis(Axis axis) {
             this.axis = axis;
         }
 
@@ -71,12 +71,12 @@ public class McElement {
 
             @Override
             public JsonElement serialize(Rotation src, Type typeOfSrc, JsonSerializationContext context) {
-                JsonObject root = new JsonObject();
-                root.add("origin", context.serialize(src.getOrigin()));
-                root.add("axis", context.serialize(src.getAxis()));
-                root.addProperty("angle", src.getAngle());
-                if (src.isRescale()) root.addProperty("rescale", src.isRescale());
-                return root;
+                JsonObject jsonRotation = new JsonObject();
+                jsonRotation.add("origin", context.serialize(src.getOrigin()));
+                jsonRotation.add("axis", context.serialize(src.getAxis()));
+                jsonRotation.addProperty("angle", src.getAngle());
+                if (src.isRescale()) jsonRotation.addProperty("rescale", src.isRescale());
+                return jsonRotation;
             }
         }
     }
@@ -113,18 +113,18 @@ public class McElement {
         this.shade = shade;
     }
 
-    public Map<McFacing, McFace> getFaces() {
+    public Map<Direction, ModelFace> getFaces() {
         return faces;
     }
 
-    public void setFaces(Map<McFacing, McFace> faces) {
+    public void setFaces(Map<Direction, ModelFace> faces) {
         this.faces = faces;
     }
 
-    public static class Serializer implements JsonSerializer<McElement> {
+    public static class Serializer implements JsonSerializer<ModelElement> {
 
         @Override
-        public JsonElement serialize(McElement src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(ModelElement src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject root = new JsonObject();
             root.add("from", context.serialize(src.getFrom()));
             root.add("to", context.serialize(src.getTo()));

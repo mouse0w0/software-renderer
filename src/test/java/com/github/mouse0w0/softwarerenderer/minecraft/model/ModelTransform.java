@@ -8,8 +8,8 @@ import org.joml.Vector3f;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-@JsonAdapter(McTransform.Serializer.class)
-public class McTransform {
+@JsonAdapter(ModelTransform.Serializer.class)
+public class ModelTransform {
     public static final Vector3f TRANSLATION_DEFAULT = new Vector3f(0.0F, 0.0F, 0.0F);
     public static final Vector3f ROTATION_DEFAULT = new Vector3f(0.0F, 0.0F, 0.0F);
     public static final Vector3f SCALE_DEFAULT = new Vector3f(1.0F, 1.0F, 1.0F);
@@ -20,11 +20,11 @@ public class McTransform {
     private Vector3f rotation;
     private Vector3f scale;
 
-    public McTransform() {
+    public ModelTransform() {
         this(TRANSLATION_DEFAULT, ROTATION_DEFAULT, SCALE_DEFAULT);
     }
 
-    public McTransform(Vector3f translation, Vector3f rotation, Vector3f scale) {
+    public ModelTransform(Vector3f translation, Vector3f rotation, Vector3f scale) {
         this.translation = translation;
         this.rotation = rotation;
         this.scale = scale;
@@ -71,7 +71,7 @@ public class McTransform {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        McTransform transform = (McTransform) o;
+        ModelTransform transform = (ModelTransform) o;
         return translation.equals(transform.translation) &&
                 rotation.equals(transform.rotation) &&
                 scale.equals(transform.scale);
@@ -82,22 +82,22 @@ public class McTransform {
         return Objects.hash(translation, rotation, scale);
     }
 
-    public static class Serializer implements JsonSerializer<McTransform> {
+    public static class Serializer implements JsonSerializer<ModelTransform> {
 
-        private static final McTransform TRANSFORM_DEFAULT = new McTransform();
+        private static final ModelTransform TRANSFORM_DEFAULT = new ModelTransform();
 
         @Override
-        public JsonElement serialize(McTransform src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(ModelTransform src, Type typeOfSrc, JsonSerializationContext context) {
             if (src.equals(TRANSFORM_DEFAULT)) return JsonNull.INSTANCE;
 
-            JsonObject root = new JsonObject();
+            JsonObject jsonTransform = new JsonObject();
             if (!TRANSLATION_DEFAULT.equals(src.getTranslation()))
-                root.add("translation", context.serialize(src.getTranslation()));
+                jsonTransform.add("translation", context.serialize(src.getTranslation()));
             if (!ROTATION_DEFAULT.equals(src.getRotation()))
-                root.add("rotation", context.serialize(src.getRotation()));
+                jsonTransform.add("rotation", context.serialize(src.getRotation()));
             if (!SCALE_DEFAULT.equals(src.getScale()))
-                root.add("scale", context.serialize(src.getScale()));
-            return root;
+                jsonTransform.add("scale", context.serialize(src.getScale()));
+            return jsonTransform;
         }
     }
 }

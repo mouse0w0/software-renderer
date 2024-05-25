@@ -8,8 +8,8 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Locale;
 
-@JsonAdapter(McFacing.Persistence.class)
-public enum McFacing {
+@JsonAdapter(Direction.Persister.class)
+public enum Direction {
     DOWN,
     UP,
     NORTH,
@@ -17,15 +17,15 @@ public enum McFacing {
     WEST,
     EAST;
 
-    public static class Persistence extends TypeAdapter<McFacing> {
+    public static class Persister extends TypeAdapter<Direction> {
         @Override
-        public void write(JsonWriter out, McFacing value) throws IOException {
+        public void write(JsonWriter out, Direction value) throws IOException {
             out.value(value.name().toLowerCase(Locale.ROOT));
         }
 
         @Override
-        public McFacing read(JsonReader in) throws IOException {
-            return McFacing.valueOf(in.nextString().toUpperCase(Locale.ROOT));
+        public Direction read(JsonReader in) throws IOException {
+            return Direction.valueOf(in.nextString().toUpperCase(Locale.ROOT));
         }
     }
 }

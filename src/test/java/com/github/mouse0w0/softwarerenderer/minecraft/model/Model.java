@@ -11,17 +11,17 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-@JsonAdapter(McModel.Serializer.class)
-public class McModel {
+@JsonAdapter(Model.Serializer.class)
+public class Model {
     private String parent;
     @SerializedName("ambientocclusion")
     private boolean ambientOcclusion = true;
     @SerializedName("gui_light")
     private String guiLight;
-    private Map<String, McTransform> display;
+    private Map<String, ModelTransform> display;
     private Map<String, String> textures;
-    private List<McElement> elements;
-    private List<McOverride> overrides;
+    private List<ModelElement> elements;
+    private List<ModelOverride> overrides;
 
     public String getParent() {
         return parent;
@@ -47,11 +47,11 @@ public class McModel {
         this.guiLight = guiLight;
     }
 
-    public Map<String, McTransform> getDisplay() {
+    public Map<String, ModelTransform> getDisplay() {
         return display;
     }
 
-    public void setDisplay(Map<String, McTransform> display) {
+    public void setDisplay(Map<String, ModelTransform> display) {
         this.display = display;
     }
 
@@ -63,39 +63,39 @@ public class McModel {
         this.textures = textures;
     }
 
-    public List<McElement> getElements() {
+    public List<ModelElement> getElements() {
         return elements;
     }
 
-    public void setElements(List<McElement> elements) {
+    public void setElements(List<ModelElement> elements) {
         this.elements = elements;
     }
 
-    public List<McOverride> getOverrides() {
+    public List<ModelOverride> getOverrides() {
         return overrides;
     }
 
-    public void setOverrides(List<McOverride> overrides) {
+    public void setOverrides(List<ModelOverride> overrides) {
         this.overrides = overrides;
     }
 
-    public static class Serializer implements JsonSerializer<McModel> {
+    public static class Serializer implements JsonSerializer<Model> {
 
         @Override
-        public JsonElement serialize(McModel src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject root = new JsonObject();
-            if (src.getParent() != null) root.addProperty("parent", src.getParent());
-            if (!src.isAmbientOcclusion()) root.addProperty("ambientocclusion", src.isAmbientOcclusion());
-            if (src.getGuiLight() != null) root.addProperty("gui_light", src.getGuiLight());
+        public JsonElement serialize(Model src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonModel = new JsonObject();
+            if (src.getParent() != null) jsonModel.addProperty("parent", src.getParent());
+            if (!src.isAmbientOcclusion()) jsonModel.addProperty("ambientocclusion", src.isAmbientOcclusion());
+            if (src.getGuiLight() != null) jsonModel.addProperty("gui_light", src.getGuiLight());
             if (src.getDisplay() != null && !src.getDisplay().isEmpty())
-                root.add("display", context.serialize(src.getDisplay()));
+                jsonModel.add("display", context.serialize(src.getDisplay()));
             if (src.getTextures() != null && !src.getTextures().isEmpty())
-                root.add("textures", context.serialize(src.getTextures()));
+                jsonModel.add("textures", context.serialize(src.getTextures()));
             if (src.getElements() != null && !src.getElements().isEmpty())
-                root.add("elements", context.serialize(src.getElements()));
+                jsonModel.add("elements", context.serialize(src.getElements()));
             if (src.getOverrides() != null && !src.getOverrides().isEmpty())
-                root.add("overrides", context.serialize(src.getOverrides()));
-            return root;
+                jsonModel.add("overrides", context.serialize(src.getOverrides()));
+            return jsonModel;
         }
     }
 }

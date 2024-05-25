@@ -4,17 +4,15 @@ import com.github.mouse0w0.softwarerenderer.BlendMode;
 import com.github.mouse0w0.softwarerenderer.CullMode;
 import com.github.mouse0w0.softwarerenderer.Renderer;
 import com.github.mouse0w0.softwarerenderer.framebuffer.DefaultFrameBuffer;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McModel;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.McModelHelper;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.Model;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelLoader;
 import com.github.mouse0w0.softwarerenderer.sampler.WrapMode;
 import com.github.mouse0w0.softwarerenderer.texture.*;
-import org.joml.Matrix4f;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ public class MinecraftTest {
         renderer.setCullMode(CullMode.BACK);
         renderer.setBlendMode(BlendMode.SRC_OVER);
 
-        McModel model = McModelHelper.load(MinecraftTest.class.getResourceAsStream("/model.json"));
+        Model model = ModelLoader.load(MinecraftTest.class.getResourceAsStream("/model.json"));
         // McModel model = McModelHelper.load(MinecraftTest.class.getResourceAsStream("/white_concrete.json"));
 
         Map<String, Texture2D> textures = new HashMap<>();
@@ -49,7 +47,7 @@ public class MinecraftTest {
                 .scale(0.625f, 0.625f, 0.625f)
                 .translate(-0.5f, -0.5f, -0.5f);
 
-        new McModelRenderer().render(model, textures::get, renderer, shader);
+        new ModelRenderer().render(model, textures::get, ModelRenderer.TintGetter.DEFAULT, false, renderer, shader);
 
         BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
         frameBuffer.getColorTexture().blit(image);
