@@ -68,7 +68,10 @@ public final class ModelRenderer {
                             Renderer<MinecraftVertex> renderer,
                             MinecraftShader shader) {
         Vector4f texCoord = getTexCoord(face, tempTexCoord);
-        Vector4f color = getFaceColor(direction, useBlockLight, tempColor).mul(tintGetter.getTint(face.getTintIndex(), tempTint));
+        Vector4f color = getFaceColor(direction, useBlockLight, tempColor);
+        if (face.getTintIndex() != -1) {
+            color.mul(tintGetter.getTint(face.getTintIndex(), tempTint));
+        }
         int[] posIndices = VERTEX_DATA_INDICES[direction.ordinal()];
         int[] texCoordIndices = getTexCoordIndices(face);
 
