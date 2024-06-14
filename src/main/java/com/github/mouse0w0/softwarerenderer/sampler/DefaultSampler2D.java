@@ -70,7 +70,7 @@ public class DefaultSampler2D implements Sampler2D {
     public Vector4f sample(float u, float v, Vector4f dest) {
         if (u < 0 || u > 1 || v < 0 || v > 1) {
             if (wrapS == WrapMode.CLAMP_TO_BORDER || wrapT == WrapMode.CLAMP_TO_BORDER) {
-                dest.set(borderColor);
+                return dest.set(borderColor);
             }
 
             u = wrap(u, wrapS);
