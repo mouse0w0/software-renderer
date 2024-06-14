@@ -96,6 +96,13 @@ public class RgbaTexture2D implements Texture2D {
     }
 
     @Override
+    public void fill(float red) {
+        for (int i = 0; i < components.length; i += 4) {
+            components[i] = red;
+        }
+    }
+
+    @Override
     public void fill(float red, float green, float blue, float alpha) {
         for (int i = 0; i < components.length; i += 4) {
             components[i] = red;
@@ -103,11 +110,6 @@ public class RgbaTexture2D implements Texture2D {
             components[i + 2] = blue;
             components[i + 3] = alpha;
         }
-    }
-
-    @Override
-    public void fill(float value) {
-        Arrays.fill(components, value);
     }
 
     @Override

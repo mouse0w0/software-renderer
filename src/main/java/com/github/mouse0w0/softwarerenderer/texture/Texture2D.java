@@ -25,9 +25,9 @@ public interface Texture2D {
         fill(src.x, src.y, src.z, src.x);
     }
 
-    void fill(float red, float green, float blue, float alpha);
+    void fill(float red);
 
-    void fill(float value);
+    void fill(float red, float green, float blue, float alpha);
 
     default int[] toIntArgbArray() {
         return toIntArgbArray(new int[getWidth() * getHeight()]);

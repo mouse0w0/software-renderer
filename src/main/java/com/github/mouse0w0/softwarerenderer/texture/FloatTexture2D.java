@@ -62,13 +62,13 @@ public class FloatTexture2D implements Texture2D {
     }
 
     @Override
-    public void fill(float red, float green, float blue, float alpha) {
+    public void fill(float red) {
         Arrays.fill(components, red);
     }
 
     @Override
-    public void fill(float value) {
-        Arrays.fill(components, value);
+    public void fill(float red, float green, float blue, float alpha) {
+        Arrays.fill(components, red);
     }
 
     @Override
