@@ -1,7 +1,5 @@
 package com.github.mouse0w0.softwarerenderer.texture;
 
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.WritableImage;
 import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;

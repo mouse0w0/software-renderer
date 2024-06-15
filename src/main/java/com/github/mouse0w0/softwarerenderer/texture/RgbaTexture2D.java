@@ -1,11 +1,8 @@
 package com.github.mouse0w0.softwarerenderer.texture;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.WritablePixelFormat;
 import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 public class RgbaTexture2D implements Texture2D {
     private static final float INV_SCALE = 1f / 255f;

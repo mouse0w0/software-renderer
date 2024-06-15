@@ -1,7 +1,6 @@
 package com.github.mouse0w0.softwarerenderer.sampler;
 
 import org.joml.Vector2f;
-import org.joml.Vector2fc;
 import org.joml.Vector4f;
 
 public interface Sampler2D {
