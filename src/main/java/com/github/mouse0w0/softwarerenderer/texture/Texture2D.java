@@ -3,6 +3,8 @@ package com.github.mouse0w0.softwarerenderer.texture;
 import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 
 public interface Texture2D {
     int getWidth();
@@ -31,9 +33,30 @@ public interface Texture2D {
         return toIntArgbArray(new int[getWidth() * getHeight()]);
     }
 
-    int[] toIntArgbArray(int[] pixels);
+    int[] toIntArgbArray(int[] data);
 
-    default void blit(BufferedImage image) {
-        image.setRGB(0, 0, getWidth(), getHeight(), toIntArgbArray(), 0, image.getWidth());
+    default byte[] toByteAbgrArray() {
+        return toByteAbgrArray(new byte[getWidth() * getHeight() * 4]);
+    }
+
+    byte[] toByteAbgrArray(byte[] data);
+
+    default BufferedImage toBufferedImage() {
+        return toBufferedImage(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR));
+    }
+
+    default BufferedImage toBufferedImage(BufferedImage image) {
+        switch (image.getType()) {
+            case BufferedImage.TYPE_INT_ARGB:
+                toIntArgbArray(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
+                break;
+            case BufferedImage.TYPE_4BYTE_ABGR:
+                toByteAbgrArray(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+                break;
+            default:
+                image.setRGB(0, 0, getWidth(), getHeight(), toIntArgbArray(), 0, image.getWidth());
+                break;
+        }
+        return image;
     }
 }

@@ -37,7 +37,7 @@ public class TextureTest {
         renderer.drawTriangle();
 
         BufferedImage image = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        frameBuffer.getColorTexture().blit(image);
+        frameBuffer.getColorTexture().toBufferedImage(image);
         ImageIO.write(image, "PNG", new File("texture.png"));
     }
 }

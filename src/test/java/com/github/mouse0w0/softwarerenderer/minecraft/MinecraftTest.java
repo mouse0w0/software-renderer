@@ -7,10 +7,11 @@ import com.github.mouse0w0.softwarerenderer.framebuffer.DefaultFrameBuffer;
 import com.github.mouse0w0.softwarerenderer.minecraft.model.Model;
 import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelLoader;
 import com.github.mouse0w0.softwarerenderer.sampler.WrapMode;
-import com.github.mouse0w0.softwarerenderer.texture.*;
+import com.github.mouse0w0.softwarerenderer.texture.FloatTexture2D;
+import com.github.mouse0w0.softwarerenderer.texture.RgbaTexture2D;
+import com.github.mouse0w0.softwarerenderer.texture.Texture2D;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,8 +50,6 @@ public class MinecraftTest {
 
         new ModelRenderer().render(model, textures::get, ModelRenderer.TintGetter.DEFAULT, false, renderer, shader);
 
-        BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
-        frameBuffer.getColorTexture().blit(image);
-        ImageIO.write(image, "PNG", new File("minecraft.png"));
+        ImageIO.write(frameBuffer.getColorTexture().toBufferedImage(), "PNG", new File("minecraft.png"));
     }
 }

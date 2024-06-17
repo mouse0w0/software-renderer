@@ -21,8 +21,8 @@ public class FXUtils {
 
         float[] components = new float[pixelsLength * 4];
         for (int i = 0; i < pixelsLength; i++) {
-            int pixel = pixels[i];
             int offset = i * 4;
+            int pixel = pixels[i];
             // @formatter:off
             components[offset]     = ((pixel >> 16) & 0xFF) * INV_SCALE;
             components[offset + 1] = ((pixel >> 8 ) & 0xFF) * INV_SCALE;
@@ -33,7 +33,12 @@ public class FXUtils {
         return new RgbaTexture2D(width, height, components);
     }
 
-    public static void blit(Texture2D texture, WritableImage image) {
-        image.getPixelWriter().setPixels(0, 0, texture.getWidth(), texture.getHeight(), PixelFormat.getIntArgbInstance(), texture.toIntArgbArray(), 0, texture.getWidth());
+    public static WritableImage toWritableImage(Texture2D texture) {
+        return toWritableImage(texture, new WritableImage(texture.getWidth(), texture.getHeight()));
+    }
+
+    public static WritableImage toWritableImage(Texture2D texture, WritableImage image) {
+        image.getPixelWriter().setPixels(0, 0, texture.getWidth(), texture.getHeight(), PixelFormat.getByteBgraInstance(), texture.toByteAbgrArray(), 0, texture.getWidth());
+        return image;
     }
 }

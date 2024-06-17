@@ -3,6 +3,8 @@ package com.github.mouse0w0.softwarerenderer.texture;
 import org.joml.Vector4f;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 
 public class RgbaTexture2D implements Texture2D {
     private static final float INV_SCALE = 1f / 255f;
@@ -27,14 +29,26 @@ public class RgbaTexture2D implements Texture2D {
         this.width = image.getWidth();
         this.height = image.getHeight();
 
-        int pixelsLength = width * height;
-        int[] pixels = new int[pixelsLength];
-        image.getRGB(0, 0, width, height, pixels, 0, width);
+        switch (image.getType()) {
+            case BufferedImage.TYPE_INT_ARGB:
+                this.components = intArgbToComponents(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
+                break;
+            case BufferedImage.TYPE_4BYTE_ABGR:
+                this.components = byteAbgrToComponents(((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+                break;
+            default:
+                int[] pixels = new int[width * height];
+                image.getRGB(0, 0, width, height, pixels, 0, width);
+                this.components = intArgbToComponents(pixels);
+                break;
+        }
+    }
 
-        this.components = new float[pixelsLength * 4];
-        for (int i = 0; i < pixelsLength; i++) {
-            int pixel = pixels[i];
+    private static float[] intArgbToComponents(int[] data) {
+        float[] components = new float[data.length * 4];
+        for (int i = 0; i < data.length; i++) {
             int offset = i * 4;
+            int pixel = data[i];
             // @formatter:off
             components[offset]     = ((pixel >> 16) & 0xFF) * INV_SCALE;
             components[offset + 1] = ((pixel >> 8 ) & 0xFF) * INV_SCALE;
@@ -42,6 +56,20 @@ public class RgbaTexture2D implements Texture2D {
             components[offset + 3] = ((pixel >> 24) & 0xFF) * INV_SCALE;
             // @formatter:on
         }
+        return components;
+    }
+
+    private static float[] byteAbgrToComponents(byte[] data) {
+        float[] components = new float[data.length];
+        for (int i = 0; i < data.length; i += 4) {
+            // @formatter:off
+            components[i]     = (data[i + 3] & 0xFF) * INV_SCALE;
+            components[i + 1] = (data[i + 2] & 0xFF) * INV_SCALE;
+            components[i + 2] = (data[i + 1] & 0xFF) * INV_SCALE;
+            components[i + 3] = (data[i    ] & 0xFF) * INV_SCALE;
+            // @formatter:on
+        }
+        return components;
     }
 
     @Override
@@ -110,20 +138,38 @@ public class RgbaTexture2D implements Texture2D {
     }
 
     @Override
-    public int[] toIntArgbArray(int[] pixels) {
+    public int[] toIntArgbArray(int[] data) {
         int pixelsLength = width * height;
-        if (pixels.length < pixelsLength) {
-            throw new IllegalArgumentException("Array is too small, Actual: " + pixels.length + ", Expected: " + pixelsLength);
+        if (data.length < pixelsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + pixelsLength);
         }
         for (int i = 0; i < pixelsLength; i++) {
             int offset = i * 4;
             // @formatter:off
-            pixels[i] = ((int) (components[offset]     * 0xFF) & 0xFF) << 16 |
+            data[i] =   ((int) (components[offset]     * 0xFF) & 0xFF) << 16 |
                         ((int) (components[offset + 1] * 0xFF) & 0xFF) << 8  |
                         ((int) (components[offset + 2] * 0xFF) & 0xFF)       |
                         ((int) (components[offset + 3] * 0xFF) & 0xFF) << 24 ;
             // @formatter:on
         }
-        return pixels;
+        return data;
+    }
+
+    @Override
+    public byte[] toByteAbgrArray(byte[] data) {
+        int pixelsLength = width * height;
+        int componentsLength = pixelsLength * 4;
+        if (data.length < componentsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + componentsLength);
+        }
+        for (int i = 0; i < componentsLength; i += 4) {
+            // @formatter:off
+            data[i    ] = (byte) ((int) (components[i + 3] * 0xFF) & 0xFF);
+            data[i + 1] = (byte) ((int) (components[i + 2] * 0xFF) & 0xFF);
+            data[i + 2] = (byte) ((int) (components[i + 1] * 0xFF) & 0xFF);
+            data[i + 3] = (byte) ((int) (components[i    ] * 0xFF) & 0xFF);
+            // @formatter:on
+        }
+        return data;
     }
 }

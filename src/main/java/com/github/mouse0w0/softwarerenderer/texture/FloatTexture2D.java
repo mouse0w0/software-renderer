@@ -72,14 +72,27 @@ public class FloatTexture2D implements Texture2D {
     }
 
     @Override
-    public int[] toIntArgbArray(int[] pixels) {
+    public int[] toIntArgbArray(int[] data) {
         int pixelsLength = width * height;
-        if (pixels.length < pixelsLength) {
-            throw new IllegalArgumentException("Array is too small, Actual: " + pixels.length + ", Expected: " + pixelsLength);
+        if (data.length < pixelsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + pixelsLength);
         }
         for (int i = 0; i < pixelsLength; i++) {
-            pixels[i] = ((int) (components[i] * 0xFF) & 0xFF) << 16;
+            data[i] = ((int) (components[i] * 0xFF) & 0xFF) << 16;
         }
-        return pixels;
+        return data;
+    }
+
+    @Override
+    public byte[] toByteAbgrArray(byte[] data) {
+        int pixelsLength = width * height;
+        int componentsLength = pixelsLength * 4;
+        if (data.length < componentsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + componentsLength);
+        }
+        for (int i = 0; i < pixelsLength; i++) {
+            data[i * 4 + 3] = (byte) ((int) (components[i] * 0xFF) & 0xFF);
+        }
+        return data;
     }
 }

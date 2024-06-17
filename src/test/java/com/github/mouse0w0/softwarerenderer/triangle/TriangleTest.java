@@ -1,8 +1,8 @@
 package com.github.mouse0w0.softwarerenderer.triangle;
 
+import com.github.mouse0w0.softwarerenderer.Renderer;
 import com.github.mouse0w0.softwarerenderer.framebuffer.DefaultFrameBuffer;
 import com.github.mouse0w0.softwarerenderer.texture.RgbaTexture2D;
-import com.github.mouse0w0.softwarerenderer.Renderer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -34,7 +34,7 @@ public class TriangleTest {
         renderer.drawTriangle();
 
         BufferedImage image = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        frameBuffer.getColorTexture().blit(image);
+        frameBuffer.getColorTexture().toBufferedImage(image);
         ImageIO.write(image, "PNG", new File("triangle.png"));
     }
 }
