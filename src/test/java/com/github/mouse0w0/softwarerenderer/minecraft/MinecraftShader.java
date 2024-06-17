@@ -5,7 +5,6 @@ import com.github.mouse0w0.softwarerenderer.sampler.DefaultSampler2D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.joml.Vector4fc;
 
 public class MinecraftShader implements Shader<MinecraftVertex> {
     public final Matrix4f modelViewProjectionMatrix = new Matrix4f();

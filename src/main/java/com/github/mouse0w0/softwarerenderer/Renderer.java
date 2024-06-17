@@ -4,7 +4,6 @@ import com.github.mouse0w0.softwarerenderer.framebuffer.FrameBuffer;
 import org.joml.Vector4f;
 import org.joml.Vector4i;
 
-import java.math.RoundingMode;
 import java.util.function.Supplier;
 
 public class Renderer<V extends Vertex<V>> {

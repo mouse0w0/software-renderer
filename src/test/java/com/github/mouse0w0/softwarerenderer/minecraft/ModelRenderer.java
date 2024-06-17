@@ -1,10 +1,10 @@
 package com.github.mouse0w0.softwarerenderer.minecraft;
 
 import com.github.mouse0w0.softwarerenderer.Renderer;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelElement;
-import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelFace;
 import com.github.mouse0w0.softwarerenderer.minecraft.model.Direction;
 import com.github.mouse0w0.softwarerenderer.minecraft.model.Model;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelElement;
+import com.github.mouse0w0.softwarerenderer.minecraft.model.ModelFace;
 import com.github.mouse0w0.softwarerenderer.texture.Texture2D;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
