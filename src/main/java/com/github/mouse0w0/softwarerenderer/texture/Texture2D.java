@@ -1,12 +1,15 @@
 package com.github.mouse0w0.softwarerenderer.texture;
 
 import org.joml.Vector4f;
+import org.joml.Vector4i;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 
 public interface Texture2D {
+    float INV_SCALE = 1f / 255f;
+
     int getWidth();
 
     int getHeight();
@@ -21,13 +24,23 @@ public interface Texture2D {
 
     void setPixel(int x, int y, Vector4f src);
 
-    default void fill(Vector4f src) {
-        fill(src.x, src.y, src.z, src.x);
-    }
+    Vector4i getPixel(int x, int y, Vector4i dest);
+
+    void setPixel(int x, int y, Vector4i src);
+
+    int getArgb(int x, int y);
+
+    void setArgb(int x, int y, int argb);
+
+    void fill(Vector4f src);
+
+    void fill(Vector4i src);
 
     void fill(float red);
 
     void fill(float red, float green, float blue, float alpha);
+
+    void fillArgb(int argb);
 
     default int[] toIntArgbArray() {
         return toIntArgbArray(new int[getWidth() * getHeight()]);

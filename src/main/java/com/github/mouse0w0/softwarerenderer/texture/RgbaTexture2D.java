@@ -1,17 +1,16 @@
 package com.github.mouse0w0.softwarerenderer.texture;
 
 import org.joml.Vector4f;
+import org.joml.Vector4i;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 
 public class RgbaTexture2D implements Texture2D {
-    private static final float INV_SCALE = 1f / 255f;
-
     private final int width;
     private final int height;
-    private final float[] components; // RGBA
+    private final float[] components;
 
     public RgbaTexture2D(int width, int height) {
         this.width = width;
@@ -50,7 +49,7 @@ public class RgbaTexture2D implements Texture2D {
             int offset = i * 4;
             int pixel = data[i];
             // @formatter:off
-            components[offset]     = ((pixel >> 16) & 0xFF) * INV_SCALE;
+            components[offset    ] = ((pixel >> 16) & 0xFF) * INV_SCALE;
             components[offset + 1] = ((pixel >> 8 ) & 0xFF) * INV_SCALE;
             components[offset + 2] = ((pixel      ) & 0xFF) * INV_SCALE;
             components[offset + 3] = ((pixel >> 24) & 0xFF) * INV_SCALE;
@@ -63,7 +62,7 @@ public class RgbaTexture2D implements Texture2D {
         float[] components = new float[data.length];
         for (int i = 0; i < data.length; i += 4) {
             // @formatter:off
-            components[i]     = (data[i + 3] & 0xFF) * INV_SCALE;
+            components[i    ] = (data[i + 3] & 0xFF) * INV_SCALE;
             components[i + 1] = (data[i + 2] & 0xFF) * INV_SCALE;
             components[i + 2] = (data[i + 1] & 0xFF) * INV_SCALE;
             components[i + 3] = (data[i    ] & 0xFF) * INV_SCALE;
@@ -100,24 +99,88 @@ public class RgbaTexture2D implements Texture2D {
     @Override
     public Vector4f getPixel(int x, int y, Vector4f dest) {
         int offset = offset(x, y);
-        dest.x = components[offset];
+        // @formatter:off
+        dest.x = components[offset    ];
         dest.y = components[offset + 1];
         dest.z = components[offset + 2];
         dest.w = components[offset + 3];
+        // @formatter:on
         return dest;
     }
 
     @Override
     public void setPixel(int x, int y, Vector4f src) {
         int offset = offset(x, y);
-        components[offset] = src.x;
+        // @formatter:off
+        components[offset    ] = src.x;
         components[offset + 1] = src.y;
         components[offset + 2] = src.z;
         components[offset + 3] = src.w;
+        // @formatter:on
+    }
+
+    @Override
+    public Vector4i getPixel(int x, int y, Vector4i dest) {
+        int offset = offset(x, y);
+        // @formatter:off
+        dest.x = ((int) (components[offset    ] * 0xFF) & 0xFF);
+        dest.y = ((int) (components[offset + 1] * 0xFF) & 0xFF);
+        dest.z = ((int) (components[offset + 2] * 0xFF) & 0xFF);
+        dest.w = ((int) (components[offset + 3] * 0xFF) & 0xFF);
+        // @formatter:on
+        return dest;
+    }
+
+    @Override
+    public void setPixel(int x, int y, Vector4i src) {
+        int offset = offset(x, y);
+        // @formatter:off
+        components[offset    ] = (src.x & 0xFF) * INV_SCALE;
+        components[offset + 1] = (src.y & 0xFF) * INV_SCALE;
+        components[offset + 2] = (src.z & 0xFF) * INV_SCALE;
+        components[offset + 3] = (src.w & 0xFF) * INV_SCALE;
+        // @formatter:on
+    }
+
+    @Override
+    public int getArgb(int x, int y) {
+        int offset = offset(x, y);
+        // @formatter:off
+        return ((int) (components[offset    ] * 0xFF) & 0xFF) << 16 |
+               ((int) (components[offset + 1] * 0xFF) & 0xFF) << 8  |
+               ((int) (components[offset + 2] * 0xFF) & 0xFF)       |
+               ((int) (components[offset + 3] * 0xFF) & 0xFF) << 24 ;
+        // @formatter:on
+    }
+
+    @Override
+    public void setArgb(int x, int y, int argb) {
+        int offset = offset(x, y);
+        // @formatter:off
+        components[offset    ] = ((argb >> 16) & 0xFF) * INV_SCALE;
+        components[offset + 1] = ((argb >> 8 ) & 0xFF) * INV_SCALE;
+        components[offset + 2] = ((argb      ) & 0xFF) * INV_SCALE;
+        components[offset + 3] = ((argb >> 24) & 0xFF) * INV_SCALE;
+        // @formatter:on
     }
 
     private int offset(int x, int y) {
         return (x + y * width) * 4;
+    }
+
+    @Override
+    public void fill(Vector4f src) {
+        fill(src.x, src.y, src.z, src.w);
+    }
+
+    @Override
+    public void fill(Vector4i src) {
+        fill(
+                (src.x & 0xFF) * INV_SCALE,
+                (src.y & 0xFF) * INV_SCALE,
+                (src.z & 0xFF) * INV_SCALE,
+                (src.w & 0xFF) * INV_SCALE
+        );
     }
 
     @Override
@@ -130,11 +193,25 @@ public class RgbaTexture2D implements Texture2D {
     @Override
     public void fill(float red, float green, float blue, float alpha) {
         for (int i = 0; i < components.length; i += 4) {
-            components[i] = red;
+            // @formatter:off
+            components[i    ] = red;
             components[i + 1] = green;
             components[i + 2] = blue;
             components[i + 3] = alpha;
+            // @formatter:on
         }
+    }
+
+    @Override
+    public void fillArgb(int argb) {
+        // @formatter:off
+        fill(
+                ((argb >> 16) & 0xFF) * INV_SCALE,
+                ((argb >> 8) & 0xFF) * INV_SCALE,
+                ((argb      ) & 0xFF) * INV_SCALE,
+                ((argb >> 24) & 0xFF) * INV_SCALE
+        );
+        // @formatter:on
     }
 
     @Override
@@ -146,10 +223,10 @@ public class RgbaTexture2D implements Texture2D {
         for (int i = 0; i < pixelsLength; i++) {
             int offset = i * 4;
             // @formatter:off
-            data[i] =   ((int) (components[offset]     * 0xFF) & 0xFF) << 16 |
-                        ((int) (components[offset + 1] * 0xFF) & 0xFF) << 8  |
-                        ((int) (components[offset + 2] * 0xFF) & 0xFF)       |
-                        ((int) (components[offset + 3] * 0xFF) & 0xFF) << 24 ;
+            data[i] = ((int) (components[offset    ] * 0xFF) & 0xFF) << 16 |
+                      ((int) (components[offset + 1] * 0xFF) & 0xFF) << 8  |
+                      ((int) (components[offset + 2] * 0xFF) & 0xFF)       |
+                      ((int) (components[offset + 3] * 0xFF) & 0xFF) << 24 ;
             // @formatter:on
         }
         return data;

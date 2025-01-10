@@ -1,6 +1,7 @@
 package com.github.mouse0w0.softwarerenderer.texture;
 
 import org.joml.Vector4f;
+import org.joml.Vector4i;
 
 import java.util.Arrays;
 
@@ -57,8 +58,39 @@ public class FloatTexture2D implements Texture2D {
         components[offset(x, y)] = src.x;
     }
 
+    @Override
+    public Vector4i getPixel(int x, int y, Vector4i dest) {
+        dest.x = ((int) (components[offset(x, y)] * 0xFF)) & 0xFF;
+        return dest;
+    }
+
+    @Override
+    public void setPixel(int x, int y, Vector4i src) {
+        components[offset(x, y)] = (src.x & 0xFF) * INV_SCALE;
+    }
+
+    @Override
+    public int getArgb(int x, int y) {
+        return ((int) (components[offset(x, y)] * 0xFF) & 0xFF) << 16;
+    }
+
+    @Override
+    public void setArgb(int x, int y, int argb) {
+        components[offset(x, y)] = ((argb >> 16) & 0xFF) * INV_SCALE;
+    }
+
     private int offset(int x, int y) {
         return x + y * width;
+    }
+
+    @Override
+    public void fill(Vector4f src) {
+        fill(src.x);
+    }
+
+    @Override
+    public void fill(Vector4i src) {
+        fill((src.x & 0xFF) * INV_SCALE);
     }
 
     @Override
@@ -69,6 +101,11 @@ public class FloatTexture2D implements Texture2D {
     @Override
     public void fill(float red, float green, float blue, float alpha) {
         Arrays.fill(components, red);
+    }
+
+    @Override
+    public void fillArgb(int argb) {
+        fill(((argb >> 16) & 0xFF) * INV_SCALE);
     }
 
     @Override
