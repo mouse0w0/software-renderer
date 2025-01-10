@@ -11,7 +11,7 @@ public class RgbaTexture2D implements Texture2D {
 
     private final int width;
     private final int height;
-    private final float[] components;
+    private final float[] components; // RGBA
 
     public RgbaTexture2D(int width, int height) {
         this.width = width;
@@ -168,6 +168,24 @@ public class RgbaTexture2D implements Texture2D {
             data[i + 1] = (byte) ((int) (components[i + 2] * 0xFF) & 0xFF);
             data[i + 2] = (byte) ((int) (components[i + 1] * 0xFF) & 0xFF);
             data[i + 3] = (byte) ((int) (components[i    ] * 0xFF) & 0xFF);
+            // @formatter:on
+        }
+        return data;
+    }
+
+    @Override
+    public byte[] toByteBgraArray(byte[] data) {
+        int pixelsLength = width * height;
+        int componentsLength = pixelsLength * 4;
+        if (data.length < componentsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + componentsLength);
+        }
+        for (int i = 0; i < componentsLength; i += 4) {
+            // @formatter:off
+            data[i    ] = (byte) ((int) (components[i + 2] * 0xFF) & 0xFF);
+            data[i + 1] = (byte) ((int) (components[i + 1] * 0xFF) & 0xFF);
+            data[i + 2] = (byte) ((int) (components[i    ] * 0xFF) & 0xFF);
+            data[i + 3] = (byte) ((int) (components[i + 3] * 0xFF) & 0xFF);
             // @formatter:on
         }
         return data;

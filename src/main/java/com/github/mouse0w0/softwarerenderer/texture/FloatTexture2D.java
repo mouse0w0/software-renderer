@@ -95,4 +95,17 @@ public class FloatTexture2D implements Texture2D {
         }
         return data;
     }
+
+    @Override
+    public byte[] toByteBgraArray(byte[] data) {
+        int pixelsLength = width * height;
+        int componentsLength = pixelsLength * 4;
+        if (data.length < componentsLength) {
+            throw new IllegalArgumentException("Array is too small, Actual: " + data.length + ", Expected: " + componentsLength);
+        }
+        for (int i = 0; i < pixelsLength; i++) {
+            data[i * 4 + 2] = (byte) ((int) (components[i] * 0xFF) & 0xFF);
+        }
+        return data;
+    }
 }

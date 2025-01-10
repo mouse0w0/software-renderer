@@ -41,6 +41,12 @@ public interface Texture2D {
 
     byte[] toByteAbgrArray(byte[] data);
 
+    default byte[] toByteBgraArray() {
+        return toByteBgraArray(new byte[getWidth() * getHeight() * 4]);
+    }
+
+    byte[] toByteBgraArray(byte[] data);
+
     default BufferedImage toBufferedImage() {
         return toBufferedImage(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
     }
