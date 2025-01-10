@@ -38,7 +38,7 @@ public class FXUtils {
     }
 
     public static WritableImage toWritableImage(Texture2D texture, WritableImage image) {
-        image.getPixelWriter().setPixels(0, 0, texture.getWidth(), texture.getHeight(), PixelFormat.getByteBgraInstance(), texture.toByteAbgrArray(), 0, texture.getWidth());
+        image.getPixelWriter().setPixels(0, 0, texture.getWidth(), texture.getHeight(), PixelFormat.getIntArgbInstance(), texture.toIntArgbArray(), 0, texture.getWidth());
         return image;
     }
 }
